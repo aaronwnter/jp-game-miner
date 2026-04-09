@@ -11,3 +11,6 @@ build/
 .coverage
 *.db
 *.sqlite3
+
+# Ignore Internal Notes
+internal-notes/
