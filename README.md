@@ -39,9 +39,17 @@ The tool should automate the boring parts without taking away the learning decis
 
 ## Current status
 
-Planning phase.
+PySide6 Shell with placeholder/mock-data and no functionalities implemented.
 
-See the `docs/` folder for the full layout.
+## Run Locally
+
+```bash
+python -m venv .venv
+source .venv/bin/activate # On Linux and Mac
+.\.venv\Scripts\activate # On Windows (choose activate file type based on shell)
+pip install -r requirements.txt
+python -m app.main
+```
 
 ## Docs index
 
