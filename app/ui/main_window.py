@@ -1,5 +1,5 @@
 from typing import Tuple
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -54,7 +54,10 @@ class MainWindow(QMainWindow):
     def _build_top_bar(self) -> QHBoxLayout:
         layout = QHBoxLayout()
 
-        layout.addWidget(QPushButton("Open Screenshot"))
+        self.open_screenshot_button = QPushButton("Open Screenshot")
+        self.open_screenshot_button.clicked.connect(self.open_screenshot_action)
+
+        layout.addWidget(self.open_screenshot_button)
         layout.addWidget(QPushButton("Paste"))
         layout.addWidget(QPushButton("Re-run OCR"))
         layout.addWidget(QPushButton("Re-tokenize"))
@@ -62,6 +65,10 @@ class MainWindow(QMainWindow):
         layout.addStretch()
 
         return layout
+
+    @Slot()
+    def open_screenshot_action(self) -> None:
+        print("This button will open a screenshot!")
 
     def _build_middle_section(self) -> QHBoxLayout:
         layout = QHBoxLayout()
