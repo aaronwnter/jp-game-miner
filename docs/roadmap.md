@@ -13,7 +13,7 @@ Deliverables:
 
 Status:
 
-- current phase
+- Done
 
 ## Phase 1 - Clickable desktop prototype
 
@@ -29,6 +29,10 @@ Deliverables:
 - enrichment form
 - card preview
 - fake data allowed
+
+Status:
+
+- Work in Progress
 
 ## Phase 2 - Core local workflow
 
