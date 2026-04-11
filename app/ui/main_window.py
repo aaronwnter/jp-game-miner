@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QFileDialog,
 )
+from PySide6.QtGui import QPixmap
 
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
@@ -79,7 +80,13 @@ class MainWindow(QMainWindow):
         if not file_path:
             return
 
-        print(file_path)
+        img_pixmap = QPixmap(file_path)
+
+        if img_pixmap.isNull():
+            print("Failed to load image.")
+            return
+
+        self.screenshot_label.setPixmap(img_pixmap)
 
     def _build_middle_section(self) -> QHBoxLayout:
         layout = QHBoxLayout()
@@ -101,11 +108,11 @@ class MainWindow(QMainWindow):
 
         screenshot_layout = QVBoxLayout(screenshot_box)
 
-        screenshot_label = QLabel("screenshot")
-        screenshot_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.screenshot_label = QLabel("screenshot")
+        self.screenshot_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         screenshot_layout.addStretch()
-        screenshot_layout.addWidget(screenshot_label)
+        screenshot_layout.addWidget(self.screenshot_label)
         screenshot_layout.addStretch()
 
         layout.addWidget(screenshot_box)
