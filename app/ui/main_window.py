@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QFrame,
     QTextEdit,
     QLineEdit,
+    QFileDialog,
 )
 
 class MainWindow(QMainWindow):
@@ -68,7 +69,17 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def open_screenshot_action(self) -> None:
-        print("This button will open a screenshot!")
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, # Parent Window (MainWindow)
+            "Open Screenshot", # Dialog title
+            "", # Starting folder/path (TODO: Let this be set in Settings)
+            "Images (*.png *.jpg *.jpeg *.bmp *.webp)" # Allowed file types
+        )
+
+        if not file_path:
+            return
+
+        print(file_path)
 
     def _build_middle_section(self) -> QHBoxLayout:
         layout = QHBoxLayout()
