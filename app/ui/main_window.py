@@ -80,13 +80,30 @@ class MainWindow(QMainWindow):
         if not file_path:
             return
 
-        img_pixmap = QPixmap(file_path)
+        pixmap = QPixmap(file_path)
 
-        if img_pixmap.isNull():
+        if pixmap.isNull():
             print("Failed to load image.")
             return
 
-        self.screenshot_label.setPixmap(img_pixmap)
+        self.current_pixmap = pixmap
+        self.scale_screenshot_image()
+
+    @Slot()
+    def scale_screenshot_image(self) -> None:
+        if not hasattr(self, "current_pixmap"):
+            return
+
+        if self.current_pixmap.isNull():
+            return
+
+        scaled_pixmap = self.current_pixmap.scaled(
+            self.screenshot_label.size(),
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation,
+        )
+
+        self.screenshot_label.setPixmap(scaled_pixmap)
 
     def _build_middle_section(self) -> QHBoxLayout:
         layout = QHBoxLayout()
@@ -104,16 +121,15 @@ class MainWindow(QMainWindow):
 
         screenshot_box = QFrame()
         screenshot_box.setFrameShape(QFrame.Shape.Box)
-        screenshot_box.setMinimumHeight(260)
+        screenshot_box.setMinimumHeight(300)
+        screenshot_box.setMinimumWidth(500)
 
         screenshot_layout = QVBoxLayout(screenshot_box)
 
         self.screenshot_label = QLabel("screenshot")
         self.screenshot_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        screenshot_layout.addStretch()
         screenshot_layout.addWidget(self.screenshot_label)
-        screenshot_layout.addStretch()
 
         layout.addWidget(screenshot_box)
 
