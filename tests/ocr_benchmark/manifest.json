@@ -1,0 +1,52 @@
+[
+  {
+    "id": "sample_001",
+    "file_name": "simple_kana_2line.png",
+    "source_game": "Pokemon Alpha Saphire",
+    "platform": "3DS",
+    "difficulty": "easy",
+    "font_type": "clean-text",
+    "notes": "Normal resolution 3DS emulator textbox crop",
+    "expected_text": "ポケットモンスターの せかいへ ようこそ！"
+  },
+  {
+    "id": "sample_002",
+    "file_name": "simple_kana_1line.png",
+    "source_game": "Pokemon Alpha Saphire",
+    "platform": "3DS",
+    "difficulty": "easy",
+    "font_type": "clean-text",
+    "notes": "Normal resolution 3DS emulator textbox crop",
+    "expected_text": "わたしの なまえは オダマキ!"
+  },
+  {
+    "id": "sample_003",
+    "file_name": "moderate_kana_2line.png",
+    "source_game": "Pokemon Alpha Saphire",
+    "platform": "3DS",
+    "difficulty": "moderate",
+    "font_type": "clean-text",
+    "notes": "Normal resolution 3DS emulator textbox crop",
+    "expected_text": "アーロンも 2かいにある じぶんの おへやに いってごらん!"
+  },
+    {
+    "id": "sample_004",
+    "file_name": "moderate_kana_special_2line.png",
+    "source_game": "Pokemon Alpha Saphire",
+    "platform": "3DS",
+    "difficulty": "moderate",
+    "font_type": "clean-text",
+    "notes": "Normal resolution 3DS emulator textbox crop",
+    "expected_text": "「あたらしい おともだちが できる!」なんて とても たのしみに してたの"
+  },
+    {
+    "id": "sample_005",
+    "file_name": "moderate_kana_special_2line_2.png",
+    "source_game": "Pokemon Alpha Saphire",
+    "platform": "3DS",
+    "difficulty": "easy",
+    "font_type": "clean-text",
+    "notes": "Normal resolution 3DS emulator textbox crop",
+    "expected_text": "きみは まだ じぶんの ポケモンを もったことが ないんだって?"
+  }
+]
