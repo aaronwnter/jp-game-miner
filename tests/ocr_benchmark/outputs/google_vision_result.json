@@ -1,0 +1,52 @@
+[
+  {
+    "sample_id": "sample_001",
+    "file_name": "simple_kana_2line.png",
+    "expected_text": "ポケットモンスターの せかいへ ようこそ！",
+    "backend": "google_vision",
+    "raw_text": "ポケットモンスターのせかいへ\nようこそ!",
+    "preprocessed_text": "ポケットモンスターのせかいへ\nようこそ!",
+    "raw_exact_match": false,
+    "preprocessed_exact_match": false
+  },
+  {
+    "sample_id": "sample_002",
+    "file_name": "simple_kana_1line.png",
+    "expected_text": "わたしの なまえは オダマキ!",
+    "backend": "google_vision",
+    "raw_text": "なまえは\nわたしのなまえは\nオダマキ !\nオダマキ!",
+    "preprocessed_text": "わたしのなまえはオダマキ!",
+    "raw_exact_match": false,
+    "preprocessed_exact_match": false
+  },
+  {
+    "sample_id": "sample_003",
+    "file_name": "moderate_kana_2line.png",
+    "expected_text": "アーロンも 2かいにある じぶんの おへやに いってごらん!",
+    "backend": "google_vision",
+    "raw_text": "アーロンも 2かいにある\nじぶんのおへやにいってごらん!",
+    "preprocessed_text": "アーロンも2かいにある\nじぶんのおへやにいってごらん!",
+    "raw_exact_match": false,
+    "preprocessed_exact_match": false
+  },
+  {
+    "sample_id": "sample_004",
+    "file_name": "moderate_kana_special_2line.png",
+    "expected_text": "「あたらしい おともだちが できる!」なんて とても たのしみに してたの",
+    "backend": "google_vision",
+    "raw_text": "「あたらしいおともだちが\nなんてとてもたのしみに\nできる!」\nしてたの",
+    "preprocessed_text": "「あたらしいおともだちができる!」\nなんてとてもたのしみに\nしてたの",
+    "raw_exact_match": false,
+    "preprocessed_exact_match": false
+  },
+  {
+    "sample_id": "sample_005",
+    "file_name": "moderate_kana_special_2line_2.png",
+    "expected_text": "きみは まだ じぶんの ポケモンを もったことが ないんだって?",
+    "backend": "google_vision",
+    "raw_text": "きみはまだ じぶんのポケモンを\nもったことがないんだって?",
+    "preprocessed_text": "きみはまだ じぶんのポケモンを\nもったことがないんだって?",
+    "raw_exact_match": false,
+    "preprocessed_exact_match": false
+  }
+]

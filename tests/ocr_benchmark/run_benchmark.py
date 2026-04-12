@@ -4,6 +4,7 @@ from pathlib import Path
 from tests.ocr_benchmark.backends.mangaocr_backend import MangaOCRBackend
 from tests.ocr_benchmark.backends.ocrspace_backend import OCRSpaceBackend
 from tests.ocr_benchmark.backends.easyocr_backend import EasyOCRBackend
+from tests.ocr_benchmark.backends.google_vision_backend import GoogleVisionBackend
 from tests.ocr_benchmark.preprocess import preprocess_image
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -18,7 +19,7 @@ def load_manifest() -> list[dict]:
 def run() -> None:
     OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    backend = EasyOCRBackend() # Change OCR model here
+    backend = GoogleVisionBackend() # Change OCR model here
     manifest = load_manifest()
 
     results = []
@@ -55,7 +56,7 @@ def run() -> None:
 
         print(f"[{sample_id}] done.")
 
-    output_file = OUTPUTS_DIR / "easyocr_result.json" #change to OCR ran in test
+    output_file = OUTPUTS_DIR / "google_vision_result.json" #change to OCR ran in test
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
 
