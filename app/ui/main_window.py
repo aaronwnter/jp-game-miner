@@ -12,8 +12,11 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QLineEdit,
     QFileDialog,
+    QMessageBox,
 )
 from PySide6.QtGui import QPixmap
+
+from app.core.ocr_service import OCRService
 
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
@@ -22,6 +25,8 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("game2anki.exe")
         self.resize(1200, 800)
 
+        self.ocr_service = OCRService()
+        self.current_pixmap_path = None
         self._build_ui()
 
     def _build_ui(self) -> None:
@@ -59,9 +64,12 @@ class MainWindow(QMainWindow):
         self.open_screenshot_button = QPushButton("Open Screenshot")
         self.open_screenshot_button.clicked.connect(self.open_screenshot_action)
 
+        self.rerun_ocr_button = QPushButton("Re-run OCR")
+        self.rerun_ocr_button.clicked.connect(self.run_ocr_action)
+
         layout.addWidget(self.open_screenshot_button)
         layout.addWidget(QPushButton("Paste"))
-        layout.addWidget(QPushButton("Re-run OCR"))
+        layout.addWidget(self.rerun_ocr_button)
         layout.addWidget(QPushButton("Re-tokenize"))
         layout.addWidget(QPushButton("Save Draft"))
         layout.addStretch()
@@ -78,7 +86,7 @@ class MainWindow(QMainWindow):
         )
 
         if not file_path:
-            return
+            self.current_pixmap_path = ""
 
         pixmap = QPixmap(file_path)
 
@@ -87,6 +95,7 @@ class MainWindow(QMainWindow):
             return
 
         self.current_pixmap = pixmap
+        self.current_pixmap_path = file_path
         self.scale_screenshot_image()
 
     @Slot()
@@ -104,6 +113,37 @@ class MainWindow(QMainWindow):
         )
 
         self.screenshot_label.setPixmap(scaled_pixmap)
+
+    @Slot()
+    def run_ocr_action(self) -> None:
+        if not self.current_pixmap_path:
+            QMessageBox.warning(
+                self,
+                "OCR Error",
+                "No screenshot selected"
+            )
+            return
+
+        try:
+            extracted_text = self.ocr_service._extract_text(self.current_pixmap_path)
+
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "OCR Error",
+                f"OCR failed: {e}"
+            )
+            return
+
+        if not extracted_text:
+            QMessageBox.information(
+                self,
+                "OCR Result",
+                "OCR returned no text."
+            )
+            return
+
+        self.sentence_input.setPlainText(extracted_text)
 
     def _build_middle_section(self) -> QHBoxLayout:
         layout = QHBoxLayout()
@@ -139,9 +179,12 @@ class MainWindow(QMainWindow):
         panel, layout = self._create_panel("OCR / SENTENCE PANEL")
 
         sentence_label = QLabel("Sentence (editable):")
-        sentence_input = QTextEdit()
-        sentence_input.setPlainText("これから ぼうけんが はじまる！")
-        sentence_input.setMaximumHeight(90)
+        self.sentence_input = QTextEdit()
+        self.sentence_input.setPlaceholderText(
+            "OCR result will appear here. You can edit the text after OCR runs."
+            )
+        self.sentence_input.setStyleSheet("font-size: 20px;")
+        self.sentence_input.setMaximumHeight(90)
 
         tokens_label = QLabel("Token candidates:")
         tokens_row = self._build_token_row()
@@ -149,7 +192,7 @@ class MainWindow(QMainWindow):
         selected_token_label = QLabel("Selected token: ぼうけん")
 
         layout.addWidget(sentence_label)
-        layout.addWidget(sentence_input)
+        layout.addWidget(self.sentence_input)
         layout.addWidget(tokens_label)
         layout.addLayout(tokens_row)
         layout.addWidget(selected_token_label)
