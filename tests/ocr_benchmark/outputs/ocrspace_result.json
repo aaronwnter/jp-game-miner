@@ -1,0 +1,52 @@
+[
+  {
+    "sample_id": "sample_001",
+    "file_name": "simple_kana_2line.png",
+    "expected_text": "ポケットモンスターの せかいへ ようこそ！",
+    "backend": "ocrspace",
+    "raw_text": "ポケットモンスヲーのせかいへ\r\nようこそ/",
+    "preprocessed_text": "ポケットモンスターのせかいへ\r\nようこそ/",
+    "raw_exact_match": false,
+    "preprocessed_exact_match": false
+  },
+  {
+    "sample_id": "sample_002",
+    "file_name": "simple_kana_1line.png",
+    "expected_text": "わたしの なまえは オダマキ!",
+    "backend": "ocrspace",
+    "raw_text": "わたしのなまえはオタマキ/",
+    "preprocessed_text": "わたしのなまえはオタマキ/",
+    "raw_exact_match": false,
+    "preprocessed_exact_match": false
+  },
+  {
+    "sample_id": "sample_003",
+    "file_name": "moderate_kana_2line.png",
+    "expected_text": "アーロンも 2かいにある じぶんの おへやに いってごらん!",
+    "backend": "ocrspace",
+    "raw_text": "アーロンも2かいにある\r\nしぶんのおへやにいって己らん/",
+    "preprocessed_text": "アーロンも2かいにある\r\nじぶんのおへやにいってごらん/",
+    "raw_exact_match": false,
+    "preprocessed_exact_match": false
+  },
+  {
+    "sample_id": "sample_004",
+    "file_name": "moderate_kana_special_2line.png",
+    "expected_text": "「あたらしい おともだちが できる!」なんて とても たのしみに してたの",
+    "backend": "ocrspace",
+    "raw_text": "「あたらしいおともだちができる/」\r\nなんてとてもたのしみにしてたの",
+    "preprocessed_text": "「あたらしいあともだちができる/」\r\nなんてとてもたのしみにしてたの",
+    "raw_exact_match": false,
+    "preprocessed_exact_match": false
+  },
+  {
+    "sample_id": "sample_005",
+    "file_name": "moderate_kana_special_2line_2.png",
+    "expected_text": "きみは まだ じぶんの ポケモンを もったことが ないんだって?",
+    "backend": "ocrspace",
+    "raw_text": "きみはまだじぶんのポケモンを\r\nもったことがないんだって?",
+    "preprocessed_text": "きみはまだじぶんのポケモンを\r\nもったことがないんだって?",
+    "raw_exact_match": false,
+    "preprocessed_exact_match": false
+  }
+]
