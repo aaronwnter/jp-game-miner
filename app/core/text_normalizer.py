@@ -35,3 +35,32 @@ def normalize_for_display(text: str) -> str:
     normalized = normalized.strip()
 
     return normalized
+
+
+def normalize_for_tokenization(text: str) -> str:
+    """
+    Stronger normalization for future tokenization.
+
+    Goals:
+    - reduce formatting noise
+    - make text more parser-friendly
+    - operate on user-reviewed text, not raw OCR output
+    """
+    if not text:
+        return ""
+
+    normalized = text
+
+    # Normalize line endings
+    normalized = normalized.replace("\r\n", "\n").replace("\r", "\n")
+
+    # Remove all line breaks
+    normalized = normalized.replace("\n", "")
+
+    # Remove all spaces
+    normalized = re.sub(r"\s+", "", normalized)
+
+    # Remove common Japanese punctuation and quotes
+    normalized = re.sub(r"[、。！？「」（）『』・…]", "", normalized)
+
+    return normalized.strip()
