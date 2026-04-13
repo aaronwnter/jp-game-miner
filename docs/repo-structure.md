@@ -1,77 +1,95 @@
 # Repository Structure
 
-## Goal
-
-Keep the public repo understandable for users and contributors.
-
-## Proposed structure
+## Current structure
 
 ```text
-game2anki/
-├─ README.md
-├─ LICENSE
-├─ .gitignore
-├─ docs/
-│  ├─ vision.md
-│  ├─ product-flow.md
-│  ├─ gui-layout.md
-│  ├─ architecture.md
-│  ├─ repo-structure.md
-│  ├─ mvp-scope.md
-│  ├─ roadmap.md
-│  └─ github-workflow.md
+jp-game-miner/
 ├─ app/
-│  ├─ __init__.py
-│  ├─ main.py
-│  ├─ ui/
-│  ├─ application/
 │  ├─ core/
 │  ├─ integrations/
-│  └─ storage/
+│  │  └─ ocr/
+│  ├─ ui/
+│  ├─ __init__.py
+│  └─ main.py
+├─ docs/
 ├─ tests/
-├─ scripts/
-├─ assets/
-│  ├─ screenshots/
-│  └─ mock-data/
+│  ├─ ocr_benchmark/
+│  └─ test_text_normalizer.py
+├─ .gitignore
+├─ LICENSE
+├─ README.md
 └─ requirements.txt
 ```
 
 ## Folder intent
 
-### `docs/`
-
-Planning, architecture, UX notes, repo process, milestones.
-
 ### `app/`
 
-Main application code once implementation starts.
+Main application code.
+
+### `app/core/`
+
+Pure app logic that should stay independent from the GUI where possible.
+
+Current examples:
+
+- OCR service
+- text normalization
+
+### `app/integrations/ocr/`
+
+OCR backend implementations used by the app.
+
+Current example:
+
+- EasyOCR backend
+
+### `app/ui/`
+
+PySide6 window and interface code.
+
+This layer should be responsible for:
+
+- user interactions
+- wiring buttons to app services
+- updating the visible UI
+
+It should avoid holding core business logic directly.
+
+### `docs/`
+
+Planning notes, roadmap, architecture, workflow notes, and OCR evaluation documentation.
 
 ### `tests/`
 
-Tests for pure logic and integration-safe behavior.
+Automated tests and OCR benchmark code.
 
-### `scripts/`
+#### `tests/ocr_benchmark/`
 
-Helper scripts for local development.
+Benchmark dataset, preprocessing, backend wrappers, and output files for OCR comparison work.
 
-### `assets/`
+#### `tests/test_text_normalizer.py`
 
-Example screenshots and demo resources for development.
+Unit tests for normalization rules used by the app.
 
-## Public repo expectations
+## Structure principles
 
-The repository should stay welcoming to people who are curious but not advanced developers.
+1. Keep benchmark code separate from app code.
+2. Keep OCR backends behind small integration modules.
+3. Keep core logic outside the UI when practical.
+4. Add structure gradually instead of creating empty folders too early.
 
-That means:
+## Near-future expected additions
 
-- readable README
-- simple run steps
-- clear issue labels
-- clear contributor notes
-- minimal surprise in structure
+Likely next additions:
 
-## Early repo rule
+- tokenization service in `app/core/`
+- tokenizer integration folder or module
+- more unit tests for app logic
+- settings/config handling once backend switching is added
 
-Do not create too many top-level folders before they are needed.
+## Notes
 
-The repo should feel small at the beginning.
+Earlier planning docs described a larger proposed structure with folders such as `application/`, `storage/`, `scripts/`, and `assets/`.
+
+The current repo intentionally stays smaller and only adds structure once it is needed.

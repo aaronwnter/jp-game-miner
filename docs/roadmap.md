@@ -1,96 +1,180 @@
 # Roadmap
 
-## Phase 0 - Planning
+## Current state
 
-Deliverables:
+The project has moved beyond planning and now has a working desktop prototype with real OCR integration.
+
+Implemented so far:
+
+- PySide6 desktop shell
+- screenshot loading and display
+- EasyOCR integration in the GUI
+- OCR display normalization
+- normalization unit tests
+- OCR benchmark suite with multiple local and external OCR backends
+
+## Phase 0 - Planning and product definition
+
+Goal:
+Define the learning workflow, app shape, repository structure, and MVP boundaries.
+
+Completed:
 
 - project vision
 - product flow
-- GUI layout
+- GUI layout planning
 - architecture notes
-- repo structure
+- repo structure planning
 - MVP scope
+- GitHub workflow notes
 
 Status:
 
-- Done
+- complete
 
-## Phase 1 - Clickable desktop prototype
+## Phase 1 - Desktop shell
 
 Goal:
-A local PySide6 app with a visible review workflow.
+Create a runnable PySide6 desktop app with the planned review layout.
 
-Deliverables:
+Completed:
 
-- main window
-- screenshot panel
-- sentence field
-- token buttons
-- enrichment form
-- card preview
-- fake data allowed
+- main window shell
+- main UI sections
+- placeholder review flow
+- local app startup and repo structure
 
 Status:
 
-- Work in Progress
+- complete
 
-## Phase 2 - Core local workflow
-
-Goal:
-The app works with real screenshots and local draft handling.
-
-Deliverables:
-
-- open image file
-- local state handling
-- queue/history basics
-- save and reload draft data
-
-## Phase 3 - Real text pipeline
+## Phase 2 - Screenshot input workflow
 
 Goal:
-Replace fake processing with real processing.
+Turn the shell into a real screenshot-based desktop tool.
 
-Deliverables:
+Completed:
 
-- OCR integration
-- sentence cleanup
-- tokenizer integration
-- better error handling
+- open screenshot from file
+- display selected screenshot in the UI
+- screenshot scaling for the preview panel
+- basic screenshot loading edge-case handling
 
-## Phase 4 - Anki integration
+Status:
 
-Goal:
-Get reviewed cards into Anki reliably.
+- complete
 
-Deliverables:
-
-- connect to AnkiConnect
-- note payload builder
-- media attachment support
-- duplicate handling basics
-
-## Phase 5 - Polish
+## Phase 3 - OCR evaluation
 
 Goal:
-Make the loop faster and more pleasant.
+Find the best OCR strategy for Pokémon-style Japanese game text.
 
-Deliverables:
+Completed:
 
-- keyboard shortcuts
-- better defaults
-- nicer errors
-- source presets
-- maybe paste-from-clipboard
-- maybe review queue improvements
+- benchmark dataset structure
+- raw vs preprocessed comparisons
+- benchmark scripts and backend wrappers
+- evaluation of MangaOCR
+- evaluation of EasyOCR
+- evaluation of Tesseract
+- evaluation of OCR.space
+- evaluation of Google Vision
 
-## Phase 6 - Advanced features
+Current conclusion:
 
-Possible later additions:
+- local OCR winner: EasyOCR
+- external OCR winner: Google Vision
+- external fallback: OCR.space
 
-- hotkey capture
-- auto-crop for textboxes
-- better dictionary ranking
-- frequency info
-- sentence mining mode
-- configurable note templates
+Status:
+
+- complete
+
+## Phase 4 - Local OCR integration
+
+Goal:
+Integrate the chosen local OCR backend into the desktop app.
+
+Completed:
+
+- EasyOCR backend in app code
+- OCR service layer
+- `Re-run OCR` button integration
+- OCR text inserted into the editable sentence field
+- basic OCR failure handling in the GUI
+
+Status:
+
+- complete
+
+## Phase 5 - Text normalization
+
+Goal:
+Normalize OCR output into cleaner text for user review and later tokenization.
+
+Completed:
+
+- display-oriented OCR normalization
+- tokenization-oriented normalization function
+- normalization wired into the OCR flow
+- test coverage for normalization rules
+
+Status:
+
+- complete
+
+## Phase 6 - Tokenization
+
+Goal:
+Convert reviewed Japanese text into clickable token candidates.
+
+Planned deliverables:
+
+- tokenizer selection
+- tokenization service
+- token candidate UI
+- user token selection
+
+Status:
+
+- next major phase
+
+## Phase 7 - Card workflow
+
+Goal:
+Turn selected text into structured Anki-ready card data.
+
+Planned deliverables:
+
+- expression / reading / meaning fields
+- source tagging
+- card preview refinement
+- later Anki integration
+
+Status:
+
+- future
+
+## Phase 8 - OCR backend choice in UI
+
+Goal:
+Allow the user to choose between local and external OCR backends.
+
+Planned deliverables:
+
+- backend selection setting
+- Google Vision support in app code
+- OCR.space fallback support
+- local vs external OCR preference handling
+
+Status:
+
+- future
+
+## Notes
+
+The project direction is now based on benchmark evidence rather than assumptions:
+
+- EasyOCR is the chosen local OCR backend
+- Google Vision is the strongest external OCR option tested
+- OCR.space remains useful as a lighter external fallback
