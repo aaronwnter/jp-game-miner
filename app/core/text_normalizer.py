@@ -61,6 +61,6 @@ def normalize_for_tokenization(text: str) -> str:
     normalized = re.sub(r"\s+", "", normalized)
 
     # Remove common Japanese punctuation and quotes
-    normalized = re.sub(r"[、。！？「」（）『』・…]", "", normalized)
+    normalized = re.sub(r'[、。！？!?「」（）『』・…]', "", normalized)
 
     return normalized.strip()
