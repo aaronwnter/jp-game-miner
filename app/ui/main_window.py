@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QPixmap
 
 from app.core.ocr_service import OCRService
+from app.core.text_normalizer import normalize_for_display
 
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
@@ -143,7 +144,8 @@ class MainWindow(QMainWindow):
             )
             return
 
-        self.sentence_input.setPlainText(extracted_text)
+        normalized_text = normalize_for_display(extracted_text)
+        self.sentence_input.setPlainText(normalized_text)
 
     def _build_middle_section(self) -> QHBoxLayout:
         layout = QHBoxLayout()
