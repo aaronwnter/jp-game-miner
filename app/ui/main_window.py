@@ -320,6 +320,7 @@ class MainWindow(QMainWindow):
         candidates = self.tokenization_service.get_candidates(self.selected_token) if self.selected_token else []
         self._render_candidates(candidates)
         self._render_token_selection()
+        self._populate_card_fields(candidate)
 
     def _render_token_selection(self) -> None:
         token_text = self.selected_token.surface if self.selected_token else "none"
@@ -363,43 +364,49 @@ class MainWindow(QMainWindow):
         form_layout = QGridLayout()
 
         expression_label = QLabel("Expression:")
-        expression_input = QLineEdit("冒険")
+        self.expression_input = QLineEdit()
 
         reading_label = QLabel("Reading:")
-        reading_input = QLineEdit("ぼうけん")
+        self.reading_input = QLineEdit()
 
         meaning_label = QLabel("Meaning:")
-        meaning_input = QLineEdit("adventure")
+        self.meaning_input = QLineEdit()
 
         source_label = QLabel("Source:")
-        source_input = QLineEdit("Pokemon")
+        self.source_input = QLineEdit()
 
         tags_label = QLabel("Tags:")
-        tags_input = QLineEdit("pokemon, game-mining, vocab")
+        self.tags_input = QLineEdit()
 
         sentence_label = QLabel("Sentence:")
-        sentence_input = QLineEdit("これから ぼうけんが はじまる！")
+        self.card_sentence_input = QLineEdit()
 
         form_layout.addWidget(expression_label, 0, 0)
-        form_layout.addWidget(expression_input, 0, 1)
+        form_layout.addWidget(self.expression_input, 0, 1)
         form_layout.addWidget(reading_label, 0, 2)
-        form_layout.addWidget(reading_input, 0, 3)
+        form_layout.addWidget(self.reading_input, 0, 3)
 
         form_layout.addWidget(meaning_label, 1, 0)
-        form_layout.addWidget(meaning_input, 1, 1, 1, 3)
+        form_layout.addWidget(self.meaning_input, 1, 1, 1, 3)
 
         form_layout.addWidget(source_label, 2, 0)
-        form_layout.addWidget(source_input, 2, 1, 1, 3)
+        form_layout.addWidget(self.source_input, 2, 1, 1, 3)
 
         form_layout.addWidget(tags_label, 3, 0)
-        form_layout.addWidget(tags_input, 3, 1, 1, 3)
+        form_layout.addWidget(self.tags_input, 3, 1, 1, 3)
 
         form_layout.addWidget(sentence_label, 4, 0)
-        form_layout.addWidget(sentence_input, 4, 1, 1, 3)
+        form_layout.addWidget(self.card_sentence_input, 4, 1, 1, 3)
 
         layout.addLayout(form_layout)
 
         return panel
+
+    def _populate_card_fields(self, candidate: KanjiCandidate) -> None:
+        self.expression_input.setText(candidate.expression)
+        self.reading_input.setText(candidate.reading)
+        self.meaning_input.setText(self._candidate_meaning_text(candidate))
+        self.card_sentence_input.setText(self.sentence_input.toPlainText())
 
     def _build_card_preview_panel(self) -> QWidget:
         panel, layout = self._create_panel("CARD PREVIEW")
