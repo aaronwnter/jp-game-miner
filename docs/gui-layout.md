@@ -42,6 +42,7 @@ The user should not have to jump through many pages or dialogs.
 | Front: 冒険                                                                       |
 | Back: ぼうけん / adventure                                                        |
 | Context: これから ぼうけんが はじまる！                                              |
+| Source: Pokemon | Tags: pokemon, game-mining, vocab                                |
 +----------------------------------------------------------------------------------+
 | [Add to Anki] [Skip] [Clear]                                                     |
 +----------------------------------------------------------------------------------+
@@ -58,6 +59,8 @@ The user should not have to jump through many pages or dialogs.
 ## Secondary windows
 
 ### Settings window
+
+This is planned UI. The current Anki export uses fixed v1 values instead of settings.
 
 ```text
 +------------------------------------------------------+
@@ -89,4 +92,4 @@ The user should not have to jump through many pages or dialogs.
 
 ## MVP note
 
-For the first version, only the main review screen is required.
+For the first version, only the main review screen is required. Anki export currently assumes deck `Japanese Mining`, note type `JP Vocab`, and fields `Expression`, `Reading`, `Meaning`, `Sentence`, `Source`, and `Tags`.
