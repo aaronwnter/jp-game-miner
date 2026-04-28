@@ -33,6 +33,8 @@ The project is no longer planning-only.
 - local OCR integration with EasyOCR
 - OCR-to-text flow wired into the GUI
 - OCR display normalization
+- reviewed sentence tokenization
+- Jisho-style kanji candidate lookup for selected kana tokens
 - normalization unit tests
 - OCR benchmark suite with sample screenshots and backend comparisons
 
@@ -46,7 +48,6 @@ The benchmark work currently supports this OCR strategy:
 
 ### Not implemented yet
 
-- tokenization
 - dictionary enrichment
 - backend switching in the GUI
 - Anki integration
@@ -124,21 +125,21 @@ At the moment, the GUI is wired only to the local EasyOCR path. External OCR sup
 #### Windows (PowerShell)
 
 ```powershell
-python -m venv .venv
+py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
 #### Windows (cmd)
 
 ```bat
-python -m venv .venv
+py -3.13 -m venv .venv
 .\.venv\Scripts\activate.bat
 ```
 
 #### Linux / macOS
 
 ```bash
-python -m venv .venv
+python3.13 -m venv .venv
 source .venv/bin/activate
 ```
 

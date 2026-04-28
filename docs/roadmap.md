@@ -128,16 +128,17 @@ Status:
 Goal:
 Convert reviewed Japanese text into clickable token candidates.
 
-Planned deliverables:
+Completed:
 
 - tokenizer selection
 - tokenization service
 - token candidate UI
 - user token selection
+- Jisho-style kanji candidate lookup for selected kana tokens
 
 Status:
 
-- next major phase
+- complete
 
 ## Phase 7 - Card workflow
 

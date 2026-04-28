@@ -1,4 +1,3 @@
-from typing import Tuple
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -13,11 +12,16 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QFileDialog,
     QMessageBox,
+    QScrollArea,
+    QSizePolicy,
 )
 from PySide6.QtGui import QPixmap
 
 from app.core.ocr_service import OCRService
 from app.core.text_normalizer import normalize_for_display
+from app.core.tokenization import KanjiCandidate, Token, TokenizationService
+from app.integrations.dictionary.jisho_client import JishoDictionaryClient
+
 
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
@@ -27,18 +31,27 @@ class MainWindow(QMainWindow):
         self.resize(1200, 800)
 
         self.ocr_service = OCRService()
+        self.tokenization_service = TokenizationService(JishoDictionaryClient())
         self.current_pixmap_path = None
+        self.current_tokens: list[Token] = []
+        self.selected_token: Token | None = None
+        self.selected_candidate: KanjiCandidate | None = None
         self._build_ui()
 
     def _build_ui(self) -> None:
         root_container = QWidget()
-        self.setCentralWidget(root_container)
+        root_scroll = QScrollArea()
+        root_scroll.setWidgetResizable(True)
+        root_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        root_scroll.setWidget(root_container)
+        self.setCentralWidget(root_scroll)
 
         root_layout = QVBoxLayout(root_container)
 
         root_layout.addLayout(self._build_title_bar())
         root_layout.addLayout(self._build_top_bar())
         root_layout.addLayout(self._build_middle_section())
+        root_layout.addWidget(self._build_kanji_candidates_panel())
         root_layout.addWidget(self._build_card_fields_panel())
         root_layout.addWidget(self._build_card_preview_panel())
         root_layout.addLayout(self._build_bottom_bar())
@@ -68,10 +81,13 @@ class MainWindow(QMainWindow):
         self.rerun_ocr_button = QPushButton("Re-run OCR")
         self.rerun_ocr_button.clicked.connect(self.run_ocr_action)
 
+        self.retokenize_button = QPushButton("Re-tokenize")
+        self.retokenize_button.clicked.connect(self.run_tokenization_action)
+
         layout.addWidget(self.open_screenshot_button)
         layout.addWidget(QPushButton("Paste"))
         layout.addWidget(self.rerun_ocr_button)
-        layout.addWidget(QPushButton("Re-tokenize"))
+        layout.addWidget(self.retokenize_button)
         layout.addWidget(QPushButton("Save Draft"))
         layout.addStretch()
 
@@ -188,29 +204,158 @@ class MainWindow(QMainWindow):
         self.sentence_input.setStyleSheet("font-size: 20px;")
         self.sentence_input.setMaximumHeight(90)
 
-        tokens_label = QLabel("Token candidates:")
-        tokens_row = self._build_token_row()
-
-        selected_token_label = QLabel("Selected token: ぼうけん")
-
         layout.addWidget(sentence_label)
         layout.addWidget(self.sentence_input)
+
+        self.token_status_label = QLabel("Review or edit the OCR sentence, then click Re-tokenize.")
+        self.selected_token_label = QLabel("Selected token: none")
+
+        tokens_label = QLabel("Tokens:")
+        self.tokens_container = QWidget()
+        self.tokens_grid = QGridLayout(self.tokens_container)
+        self.tokens_grid.setContentsMargins(0, 0, 0, 0)
+        self.tokens_grid.setSpacing(6)
+
+        layout.addWidget(self.token_status_label)
         layout.addWidget(tokens_label)
-        layout.addLayout(tokens_row)
-        layout.addWidget(selected_token_label)
+        layout.addWidget(self.tokens_container)
+        layout.addWidget(self.selected_token_label)
         layout.addStretch()
 
         return panel
 
-    def _build_token_row(self) -> QHBoxLayout:
-        layout = QHBoxLayout()
+    def _build_kanji_candidates_panel(self) -> QWidget:
+        panel, layout = self._create_panel("KANJI CANDIDATES")
 
-        for token in ["これから", "ぼうけん", "が", "はじまる"]:
-            button = QPushButton(token)
-            layout.addWidget(button)
+        self.selected_candidate_label = QLabel("Selected candidate: none")
+        self.candidates_container = QWidget()
+        self.candidates_layout = QHBoxLayout(self.candidates_container)
+        self.candidates_layout.setContentsMargins(0, 0, 0, 0)
+        self.candidates_layout.setSpacing(8)
 
-        layout.addStretch()
-        return layout
+        candidates_scroll = QScrollArea()
+        candidates_scroll.setWidgetResizable(True)
+        candidates_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        candidates_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        candidates_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        candidates_scroll.setMinimumHeight(96)
+        candidates_scroll.setWidget(self.candidates_container)
+
+        layout.addWidget(candidates_scroll)
+        layout.addWidget(self.selected_candidate_label)
+
+        return panel
+
+    @Slot()
+    def run_tokenization_action(self) -> None:
+        sentence = self.sentence_input.toPlainText()
+        self.current_tokens = self.tokenization_service.tokenize(sentence)
+        self.selected_token = None
+        self.selected_candidate = None
+
+        self._render_tokens()
+        self._clear_layout(self.candidates_layout)
+        self._render_token_selection()
+
+        if not sentence.strip():
+            self.token_status_label.setText("No sentence to tokenize.")
+            return
+
+        if not self.current_tokens:
+            self.token_status_label.setText("No tokens found.")
+            return
+
+        self.token_status_label.setText(f"Found {len(self.current_tokens)} tokens.")
+
+    def _render_tokens(self) -> None:
+        self._clear_layout(self.tokens_grid)
+
+        for index, token in enumerate(self.current_tokens):
+            button = QPushButton(token.surface)
+            button.setEnabled(token.selectable)
+            button.clicked.connect(lambda checked=False, selected=token: self.select_token(selected))
+            button.setStyleSheet(self._token_button_style(token))
+            self.tokens_grid.addWidget(button, index // 6, index % 6)
+
+    @Slot()
+    def select_token(self, token: Token) -> None:
+        self.selected_token = token
+        self.selected_candidate = None
+
+        self._render_tokens()
+        self._render_token_selection()
+        self._clear_layout(self.candidates_layout)
+
+        self.token_status_label.setText(f"Looking up candidates for {token.surface}...")
+        candidates = self.tokenization_service.get_candidates(token)
+
+        if candidates:
+            self.token_status_label.setText(f"Found {len(candidates)} candidates for {token.surface}.")
+        elif self.tokenization_service.last_error:
+            self.token_status_label.setText(self.tokenization_service.last_error)
+        else:
+            self.token_status_label.setText(f"No candidates found for {token.surface}.")
+
+        self._render_candidates(candidates)
+
+    def _render_candidates(self, candidates: list[KanjiCandidate]) -> None:
+        self._clear_layout(self.candidates_layout)
+
+        for candidate in candidates:
+            button = QPushButton(self._candidate_button_text(candidate))
+            button.setMinimumSize(220, 76)
+            button.setMaximumWidth(280)
+            button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+            button.clicked.connect(
+                lambda checked=False, selected=candidate: self.select_candidate(selected)
+            )
+            button.setStyleSheet(self._candidate_button_style(candidate))
+            self.candidates_layout.addWidget(button)
+
+        self.candidates_layout.addStretch()
+
+    @Slot()
+    def select_candidate(self, candidate: KanjiCandidate) -> None:
+        self.selected_candidate = candidate
+        candidates = self.tokenization_service.get_candidates(self.selected_token) if self.selected_token else []
+        self._render_candidates(candidates)
+        self._render_token_selection()
+
+    def _render_token_selection(self) -> None:
+        token_text = self.selected_token.surface if self.selected_token else "none"
+        self.selected_token_label.setText(f"Selected token: {token_text}")
+
+        if self.selected_candidate:
+            meaning = self._candidate_meaning_text(self.selected_candidate)
+            self.selected_candidate_label.setText(
+                f"Selected candidate: {self.selected_candidate.expression} "
+                f"({self.selected_candidate.reading}) - {meaning}"
+            )
+        else:
+            self.selected_candidate_label.setText("Selected candidate: none")
+
+    def _token_button_style(self, token: Token) -> str:
+        if token == self.selected_token:
+            return "font-weight: bold; background-color: #d8ecff; color: #000000;"
+        return ""
+
+    def _candidate_button_style(self, candidate: KanjiCandidate) -> str:
+        if candidate == self.selected_candidate:
+            return (
+                "font-weight: bold; background-color: #dff3df; color: #000000; "
+                "text-align: left; padding: 8px;"
+            )
+        return "text-align: left; padding: 8px;"
+
+    def _candidate_button_text(self, candidate: KanjiCandidate) -> str:
+        common_marker = "common" if candidate.is_common else "dictionary"
+        meaning = self._candidate_meaning_text(candidate)
+        return f"{candidate.expression}  [{candidate.reading}]  {common_marker}\n{meaning}"
+
+    def _candidate_meaning_text(self, candidate: KanjiCandidate) -> str:
+        if not candidate.meanings:
+            return "No English definition listed"
+        return "; ".join(candidate.meanings)
 
     def _build_card_fields_panel(self) -> QWidget:
         panel, layout = self._create_panel("ENRICHMENT / CARD FIELDS")
@@ -291,3 +436,14 @@ class MainWindow(QMainWindow):
         layout.addWidget(title_label)
 
         return panel, layout
+
+    def _clear_layout(self, layout) -> None:
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            child_layout = item.layout()
+
+            if widget is not None:
+                widget.deleteLater()
+            elif child_layout is not None:
+                self._clear_layout(child_layout)
