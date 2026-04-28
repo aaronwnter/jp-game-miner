@@ -13,7 +13,11 @@ Current flow:
 3. Run OCR on the screenshot
 4. Normalize the extracted text for display
 5. Review and edit the sentence manually
-6. Prepare the text for later tokenization and card creation
+6. Tokenize the reviewed sentence
+7. Select a token and choose a kanji candidate
+8. Review editable enrichment/card fields
+9. Preview the card
+10. Send a text-only note to Anki through AnkiConnect
 
 The project is built around one core idea:
 **automation should support the learning decision, not replace it**
@@ -35,7 +39,11 @@ The project is no longer planning-only.
 - OCR display normalization
 - reviewed sentence tokenization
 - Jisho-style kanji candidate lookup for selected kana tokens
+- editable enrichment/card fields populated from the selected candidate
+- live card preview based on editable fields
+- text-only AnkiConnect export for a fixed v1 deck/note type
 - normalization unit tests
+- card model and Anki payload unit tests
 - OCR benchmark suite with sample screenshots and backend comparisons
 
 ### OCR benchmark conclusion
@@ -48,11 +56,11 @@ The benchmark work currently supports this OCR strategy:
 
 ### Not implemented yet
 
-- dictionary enrichment
 - backend switching in the GUI
-- Anki integration
 - queue/history workflow
-- final card creation flow
+- configurable Anki deck, note type, or field mapping
+- screenshot/media export to Anki
+- Save Draft, Skip, Clear, Paste, Settings, and Help button behavior
 
 ---
 
@@ -63,6 +71,8 @@ jp-game-miner/
 ├─ app/
 │  ├─ core/
 │  ├─ integrations/
+│  │  ├─ anki/
+│  │  ├─ dictionary/
 │  │  └─ ocr/
 │  ├─ ui/
 │  ├─ __init__.py
@@ -70,7 +80,11 @@ jp-game-miner/
 ├─ docs/
 ├─ tests/
 │  ├─ ocr_benchmark/
-│  └─ test_text_normalizer.py
+│  ├─ test_ankiconnect_client.py
+│  ├─ test_card.py
+│  ├─ test_jisho_client.py
+│  ├─ test_text_normalizer.py
+│  └─ test_tokenization.py
 ├─ .gitignore
 ├─ LICENSE
 ├─ README.md
@@ -83,10 +97,16 @@ jp-game-miner/
   Main application code for the desktop app
 
 - `app/core/`
-  Core application logic such as OCR service and text normalization
+  Core application logic such as OCR service, text normalization, tokenization, and card drafts
+
+- `app/integrations/anki/`
+  AnkiConnect client used to add text-only notes to Anki
 
 - `app/integrations/ocr/`
   OCR backend implementations used by the app
+
+- `app/integrations/dictionary/`
+  Dictionary lookup client used for kanji candidates
 
 - `app/ui/`
   PySide6 window and UI logic
@@ -96,6 +116,12 @@ jp-game-miner/
 
 - `tests/test_text_normalizer.py`
   Unit tests for normalization behavior
+
+- `tests/test_card.py`
+  Unit tests for card draft validation, field mapping, and tag parsing
+
+- `tests/test_ankiconnect_client.py`
+  Unit tests for AnkiConnect payload construction and error handling
 
 - `docs/`
   Planning, architecture, benchmark notes, and project workflow documentation
@@ -154,6 +180,18 @@ pip install -r requirements.txt
 ```bash
 python -m app.main
 ```
+
+### 4. Add notes to Anki
+
+The `Add to Anki` button uses AnkiConnect at `http://127.0.0.1:8765`.
+
+For the current v1 export, Anki must be running with the AnkiConnect add-on installed, and the target profile must contain:
+
+- deck: `Japanese Mining`
+- note type: `JP Vocab`
+- fields: `Expression`, `Reading`, `Meaning`, `Sentence`, `Source`, `Tags`
+
+Export is text-only for now. Screenshot/media export is planned for later.
 
 ---
 

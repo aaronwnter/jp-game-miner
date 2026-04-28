@@ -10,7 +10,13 @@ Implemented so far:
 - screenshot loading and display
 - EasyOCR integration in the GUI
 - OCR display normalization
+- reviewed sentence tokenization
+- Jisho-style kanji candidate lookup
+- editable enrichment/card fields
+- live card preview
+- text-only AnkiConnect export
 - normalization unit tests
+- card and AnkiConnect payload unit tests
 - OCR benchmark suite with multiple local and external OCR backends
 
 ## Phase 0 - Planning and product definition
@@ -145,16 +151,27 @@ Status:
 Goal:
 Turn selected text into structured Anki-ready card data.
 
-Planned deliverables:
+Completed:
 
 - expression / reading / meaning fields
 - source tagging
 - card preview refinement
-- later Anki integration
+- card draft model
+- AnkiConnect payload construction
+- text-only Anki export through `Add to Anki`
+- validation before export
+- clean UI error handling for AnkiConnect failures
 
 Status:
 
-- future
+- complete
+
+Current limits:
+
+- fixed deck: `Japanese Mining`
+- fixed note type: `JP Vocab`
+- no screenshot/media export
+- no configurable Anki field mapping yet
 
 ## Phase 8 - OCR backend choice in UI
 

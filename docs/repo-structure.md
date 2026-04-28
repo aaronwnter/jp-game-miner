@@ -7,6 +7,8 @@ jp-game-miner/
 ├─ app/
 │  ├─ core/
 │  ├─ integrations/
+│  │  ├─ anki/
+│  │  ├─ dictionary/
 │  │  └─ ocr/
 │  ├─ ui/
 │  ├─ __init__.py
@@ -14,7 +16,11 @@ jp-game-miner/
 ├─ docs/
 ├─ tests/
 │  ├─ ocr_benchmark/
-│  └─ test_text_normalizer.py
+│  ├─ test_ankiconnect_client.py
+│  ├─ test_card.py
+│  ├─ test_jisho_client.py
+│  ├─ test_text_normalizer.py
+│  └─ test_tokenization.py
 ├─ .gitignore
 ├─ LICENSE
 ├─ README.md
@@ -34,7 +40,17 @@ Pure app logic that should stay independent from the GUI where possible.
 Current examples:
 
 - OCR service
+- card draft model
+- tokenization service
 - text normalization
+
+### `app/integrations/anki/`
+
+AnkiConnect integration used to add reviewed text-only notes to Anki.
+
+Current example:
+
+- AnkiConnect client
 
 ### `app/integrations/ocr/`
 
@@ -43,6 +59,14 @@ OCR backend implementations used by the app.
 Current example:
 
 - EasyOCR backend
+
+### `app/integrations/dictionary/`
+
+Dictionary lookup integrations used by token and kanji candidate workflows.
+
+Current example:
+
+- Jisho-style dictionary client
 
 ### `app/ui/`
 
@@ -72,6 +96,22 @@ Benchmark dataset, preprocessing, backend wrappers, and output files for OCR com
 
 Unit tests for normalization rules used by the app.
 
+#### `tests/test_card.py`
+
+Unit tests for card draft validation, tag parsing, and Anki field mapping.
+
+#### `tests/test_ankiconnect_client.py`
+
+Unit tests for AnkiConnect payload construction and error handling.
+
+#### `tests/test_jisho_client.py`
+
+Unit tests for dictionary candidate parsing and lookup failure handling.
+
+#### `tests/test_tokenization.py`
+
+Unit tests for reviewed sentence tokenization and dictionary candidate lookup.
+
 ## Structure principles
 
 1. Keep benchmark code separate from app code.
@@ -83,10 +123,9 @@ Unit tests for normalization rules used by the app.
 
 Likely next additions:
 
-- tokenization service in `app/core/`
-- tokenizer integration folder or module
-- more unit tests for app logic
 - settings/config handling once backend switching is added
+- storage for drafts, history, and queue state
+- media handling for screenshot export to Anki
 
 ## Notes
 

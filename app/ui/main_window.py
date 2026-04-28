@@ -17,9 +17,11 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QPixmap
 
+from app.core.card import CardDraft
 from app.core.ocr_service import OCRService
 from app.core.text_normalizer import normalize_for_display
 from app.core.tokenization import KanjiCandidate, Token, TokenizationService
+from app.integrations.anki import AnkiConnectClient, AnkiConnectError
 from app.integrations.dictionary.jisho_client import JishoDictionaryClient
 
 
@@ -32,6 +34,7 @@ class MainWindow(QMainWindow):
 
         self.ocr_service = OCRService()
         self.tokenization_service = TokenizationService(JishoDictionaryClient())
+        self.anki_client = AnkiConnectClient()
         self.current_pixmap_path = None
         self.current_tokens: list[Token] = []
         self.selected_token: Token | None = None
@@ -444,18 +447,18 @@ class MainWindow(QMainWindow):
             return
 
         card = self._current_card_fields()
-        self.card_preview_front_label.setText(f"Front: {card['expression'] or '—'}")
+        self.card_preview_front_label.setText(f"Front: {card['expression'] or '-'}")
 
         back_parts = [value for value in (card["reading"], card["meaning"]) if value]
-        self.card_preview_back_label.setText(f"Back: {' / '.join(back_parts) if back_parts else '—'}")
-        self.card_preview_context_label.setText(f"Context: {card['sentence'] or '—'}")
+        self.card_preview_back_label.setText(f"Back: {' / '.join(back_parts) if back_parts else '-'}")
+        self.card_preview_context_label.setText(f"Context: {card['sentence'] or '-'}")
 
         meta_parts = []
         if card["source"]:
             meta_parts.append(f"Source: {card['source']}")
         if card["tags"]:
             meta_parts.append(f"Tags: {card['tags']}")
-        self.card_preview_meta_label.setText(" | ".join(meta_parts) if meta_parts else "Source / Tags: —")
+        self.card_preview_meta_label.setText(" | ".join(meta_parts) if meta_parts else "Source / Tags: -")
 
     def _current_card_fields(self) -> dict[str, str]:
         return {
@@ -467,10 +470,53 @@ class MainWindow(QMainWindow):
             "sentence": self.card_sentence_input.text().strip(),
         }
 
+    def _current_card_draft(self) -> CardDraft:
+        card = self._current_card_fields()
+        return CardDraft(
+            expression=card["expression"],
+            reading=card["reading"],
+            meaning=card["meaning"],
+            sentence=card["sentence"],
+            source=card["source"],
+            tags=card["tags"],
+        )
+
+    @Slot()
+    def add_to_anki_action(self) -> None:
+        card = self._current_card_draft()
+        validation_errors = card.validate()
+
+        if validation_errors:
+            QMessageBox.warning(
+                self,
+                "Card Incomplete",
+                "\n".join(validation_errors),
+            )
+            return
+
+        try:
+            note_id = self.anki_client.add_card(card)
+        except AnkiConnectError as exc:
+            QMessageBox.critical(
+                self,
+                "Anki Export Failed",
+                str(exc),
+            )
+            return
+
+        QMessageBox.information(
+            self,
+            "Anki Export Complete",
+            f"Added note to Anki with ID {note_id}.",
+        )
+
     def _build_bottom_bar(self) -> QHBoxLayout:
         layout = QHBoxLayout()
 
-        layout.addWidget(QPushButton("Add to Anki"))
+        self.add_to_anki_button = QPushButton("Add to Anki")
+        self.add_to_anki_button.clicked.connect(self.add_to_anki_action)
+
+        layout.addWidget(self.add_to_anki_button)
         layout.addWidget(QPushButton("Skip"))
         layout.addWidget(QPushButton("Clear"))
         layout.addStretch()

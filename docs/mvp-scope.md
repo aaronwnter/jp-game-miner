@@ -15,12 +15,11 @@ Current implemented parts:
 3. Run OCR using EasyOCR
 4. Normalize OCR output for display
 5. Let the user review and edit the sentence manually
-
-Planned next MVP parts:
 6. Tokenize the reviewed sentence
 7. Let the user select a token to learn
 8. Prepare editable card fields
-9. Add or export the result for Anki
+9. Preview the card from editable fields
+10. Add a text-only note to Anki through AnkiConnect
 
 ## In scope for the MVP
 
@@ -32,6 +31,7 @@ Planned next MVP parts:
 - text normalization before later tokenization
 - tokenization and token selection
 - structured card field preparation
+- text-only AnkiConnect export
 - human-in-the-loop review at every important step
 
 ## Explicitly out of scope for the MVP
@@ -48,6 +48,8 @@ Planned next MVP parts:
 - automatic textbox detection
 - full queue/history workflow
 - advanced theming
+- screenshot/media export to Anki
+- configurable Anki deck, note type, or field mapping
 
 ## MVP quality bar
 
@@ -56,7 +58,8 @@ The MVP is good enough when:
 - the screenshot-to-text workflow is stable,
 - the user can correct OCR output easily,
 - the reviewed sentence can move into token selection,
-- and the app clearly supports the learning loop instead of just OCR output.
+- the selected candidate can populate editable card fields,
+- and the reviewed card can be sent to Anki as a text-only note.
 
 ## MVP user story
 
@@ -77,4 +80,4 @@ so that gameplay naturally becomes something I can learn from.
 6. tokenization
 7. token selection
 8. structured card preparation
-9. later Anki output
+9. text-only AnkiConnect export

@@ -121,6 +121,19 @@ card draft
 Anki note payload
 ```
 
+## Current Anki export
+
+The current app uses a small text-only AnkiConnect integration.
+
+- `CardDraft` lives in `app/core/card.py`.
+- AnkiConnect client code lives in `app/integrations/anki/`.
+- The UI builds a card draft from editable enrichment fields.
+- Required fields are validated before sending anything to Anki.
+- The v1 deck is fixed to `Japanese Mining`.
+- The v1 note type is fixed to `JP Vocab`.
+- The v1 note fields are `Expression`, `Reading`, `Meaning`, `Sentence`, `Source`, and `Tags`.
+- Screenshot/media export is intentionally not part of the current implementation.
+
 ## Design rules
 
 1. UI should not contain business logic.
@@ -131,4 +144,4 @@ Anki note payload
 
 ## MVP architecture note
 
-For early development, mocked OCR and mocked dictionary enrichment are acceptable so the user flow can be tested before harder integrations are added.
+The app now has real OCR, dictionary candidate lookup, card draft construction, and AnkiConnect export. Storage, settings, queue/history, and media export are still future layers.

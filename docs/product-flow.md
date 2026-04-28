@@ -93,28 +93,18 @@ This is the most important product decision in the whole workflow.
 
 ### 6. Enrichment
 
-The selected token is turned into candidate card data.
+The selected token is used to look up kanji candidates.
 
-Possible fields:
+When the user chooses a candidate, the app fills editable card fields.
 
-- display expression
-- dictionary form
+Current fields:
+
+- expression
 - reading
 - meaning
-- part of speech
-- source tag
-
-Example:
-
-```text
-Expression: 冒険
-Reading: ぼうけん
-Meaning: adventure
-```
-
-### 7. Card preview
-
-The app prepares a structured card.
+- sentence
+- source
+- tags
 
 Example:
 
@@ -123,15 +113,37 @@ Expression: 冒険
 Reading: ぼうけん
 Meaning: adventure
 Sentence: これから ぼうけんが はじまる！
-Screenshot: original capture
+Source: Pokemon
+Tags: pokemon, game-mining, vocab
+```
+
+### 7. Card preview
+
+The app previews the structured card from the editable enrichment fields.
+
+Example:
+
+```text
+Front: 冒険
+Back: ぼうけん / adventure
+Context: これから ぼうけんが はじまる！
 Source: Pokémon
+Tags: pokemon, game-mining, vocab
 ```
 
 ### 8. Add to Anki
 
 The user confirms the card.
 
-The app sends it to Anki.
+The app validates required fields, then sends a text-only note to Anki through AnkiConnect.
+
+Current Anki export target:
+
+- deck: `Japanese Mining`
+- note type: `JP Vocab`
+- fields: `Expression`, `Reading`, `Meaning`, `Sentence`, `Source`, `Tags`
+
+Screenshot/media export is not implemented yet.
 
 ## UX rule
 
